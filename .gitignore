@@ -400,3 +400,9 @@ FodyWeavers.xsd
 # JetBrains Rider
 *.sln.iml
 .worktrees/
+*.db
+*.db-shm
+*.db-wal
+appsettings.Development.json
+secrets.json
+coverage/
