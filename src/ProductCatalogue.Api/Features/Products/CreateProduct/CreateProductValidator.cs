@@ -1,6 +1,6 @@
 using FluentValidation;
 
-namespace ProductCatalogue.Api.Features.Products;
+namespace ProductCatalogue.Api.Features.Products.CreateProduct;
 
 public sealed class CreateProductValidator : AbstractValidator<CreateProductCommand>
 {

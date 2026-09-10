@@ -1,4 +1,5 @@
 using ProductCatalogue.Api.Features.Products;
+using ProductCatalogue.Api.Features.Products.CreateProduct;
 
 namespace ProductCatalogue.UnitTests.Features.Products;
 

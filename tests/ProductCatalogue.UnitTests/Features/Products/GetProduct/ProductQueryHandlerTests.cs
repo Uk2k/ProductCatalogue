@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using ProductCatalogue.Api.Data;
 using ProductCatalogue.Api.Features.Products;
+using ProductCatalogue.Api.Features.Products.GetProduct;
+using ProductCatalogue.Api.Features.Products.GetProducts;
 
 namespace ProductCatalogue.UnitTests.Features.Products;
 

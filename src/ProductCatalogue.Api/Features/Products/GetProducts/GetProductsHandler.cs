@@ -2,7 +2,9 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using ProductCatalogue.Api.Data;
 
-namespace ProductCatalogue.Api.Features.Products;
+namespace ProductCatalogue.Api.Features.Products.GetProducts;
+
+using ProductCatalogue.Api.Features.Products;
 
 public sealed class GetProductsHandler(AppDbContext db) : IRequestHandler<GetProductsQuery, IReadOnlyList<ProductResponse>>
 {

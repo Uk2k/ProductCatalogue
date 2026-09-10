@@ -1,7 +1,9 @@
 using MediatR;
 using ProductCatalogue.Api.Data;
 
-namespace ProductCatalogue.Api.Features.Products;
+namespace ProductCatalogue.Api.Features.Products.CreateProduct;
+
+using ProductCatalogue.Api.Features.Products;
 
 public sealed class CreateProductHandler(AppDbContext db) : IRequestHandler<CreateProductCommand, ProductResponse>
 {

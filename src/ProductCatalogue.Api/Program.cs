@@ -1,5 +1,8 @@
 using ProductCatalogue.Api.Data;
 using ProductCatalogue.Api.Features.Products;
+using ProductCatalogue.Api.Features.Products.CreateProduct;
+using ProductCatalogue.Api.Features.Products.GetProduct;
+using ProductCatalogue.Api.Features.Products.GetProducts;
 using FluentValidation;
 using MediatR;
 
@@ -21,7 +24,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.MapHealthChecks("/health");
-app.MapProductEndpoints();
+app.MapCreateProductEndpoint();
+app.MapGetProductEndpoint();
+app.MapGetProductsEndpoint();
 
 app.Run();
 
