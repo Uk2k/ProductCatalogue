@@ -14,7 +14,7 @@ public sealed class DeleteProductHandlerTests
         var id = Guid.NewGuid();
         db.Products.Add(new Product { Id = id, Name = "Delete", Price = 1, Stock = 1 });
         await db.SaveChangesAsync();
-        Assert.True(await new DeleteProductHandler(db).Handle(new(id), default));
+        Assert.True(await new DeleteProductHandler(new ProductRepository(db)).Handle(new(id), default));
         Assert.False(await db.Products.AnyAsync());
     }
 
@@ -22,7 +22,7 @@ public sealed class DeleteProductHandlerTests
     public async Task Returns_false_for_missing_product()
     {
         await using var db = CreateContext();
-        Assert.False(await new DeleteProductHandler(db).Handle(new(Guid.NewGuid()), default));
+        Assert.False(await new DeleteProductHandler(new ProductRepository(db)).Handle(new(Guid.NewGuid()), default));
     }
 
     private static AppDbContext CreateContext() => new(new DbContextOptionsBuilder<AppDbContext>().UseInMemoryDatabase(Guid.NewGuid().ToString()).Options);

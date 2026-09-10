@@ -15,7 +15,7 @@ public sealed class ProductQueryHandlerTests
         var id = Guid.NewGuid();
         db.Products.Add(new Product { Id = id, Name = "Keyboard", Price = 49.99m, Stock = 10 });
         await db.SaveChangesAsync();
-        var result = await new GetProductByIdHandler(db).Handle(new(id), default);
+        var result = await new GetProductByIdHandler(new ProductRepository(db)).Handle(new(id), default);
         Assert.Equal(new ProductResponse(id, "Keyboard", 49.99m, 10), result);
     }
 
@@ -25,7 +25,7 @@ public sealed class ProductQueryHandlerTests
         await using var db = CreateContext();
         db.Products.AddRange(new Product { Id = Guid.Parse("00000000-0000-0000-0000-000000000002"), Name = "Zed", Price = 2, Stock = 1 }, new Product { Id = Guid.Parse("00000000-0000-0000-0000-000000000001"), Name = "Alpha", Price = 1, Stock = 1 });
         await db.SaveChangesAsync();
-        var result = await new GetProductsHandler(db).Handle(new(), default);
+        var result = await new GetProductsHandler(new ProductRepository(db)).Handle(new(), default);
         Assert.Equal(["Alpha", "Zed"], result.Select(x => x.Name));
     }
 
@@ -33,7 +33,7 @@ public sealed class ProductQueryHandlerTests
     public async Task GetProductById_returns_null_when_missing()
     {
         await using var db = CreateContext();
-        var result = await new GetProductByIdHandler(db).Handle(new(Guid.NewGuid()), default);
+        var result = await new GetProductByIdHandler(new ProductRepository(db)).Handle(new(Guid.NewGuid()), default);
         Assert.Null(result);
     }
 
