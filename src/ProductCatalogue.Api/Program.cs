@@ -3,6 +3,9 @@ using ProductCatalogue.Api.Features.Products;
 using ProductCatalogue.Api.Features.Products.CreateProduct;
 using ProductCatalogue.Api.Features.Products.GetProduct;
 using ProductCatalogue.Api.Features.Products.GetProducts;
+using ProductCatalogue.Api.Features.Products.UpdateProduct;
+using ProductCatalogue.Api.Features.Products.DeleteProduct;
+using ProductCatalogue.Api.Infrastructure.Http;
 using FluentValidation;
 using MediatR;
 
@@ -17,6 +20,8 @@ builder.Services.AddHealthChecks();
 
 var app = builder.Build();
 
+app.UseMiddleware<RequestLoggingMiddleware>();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -27,6 +32,8 @@ app.MapHealthChecks("/health");
 app.MapCreateProductEndpoint();
 app.MapGetProductEndpoint();
 app.MapGetProductsEndpoint();
+app.MapUpdateProductEndpoint();
+app.MapDeleteProductEndpoint();
 
 app.Run();
 

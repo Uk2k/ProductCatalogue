@@ -9,6 +9,17 @@ namespace ProductCatalogue.UnitTests.Features.Products;
 public sealed class ProductQueryHandlerTests
 {
     [Fact]
+    public async Task GetProductById_returns_projected_product()
+    {
+        await using var db = CreateContext();
+        var id = Guid.NewGuid();
+        db.Products.Add(new Product { Id = id, Name = "Keyboard", Price = 49.99m, Stock = 10 });
+        await db.SaveChangesAsync();
+        var result = await new GetProductByIdHandler(db).Handle(new(id), default);
+        Assert.Equal(new ProductResponse(id, "Keyboard", 49.99m, 10), result);
+    }
+
+    [Fact]
     public async Task GetProducts_orders_by_name_then_id()
     {
         await using var db = CreateContext();
