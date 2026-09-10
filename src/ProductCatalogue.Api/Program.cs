@@ -8,6 +8,7 @@ using ProductCatalogue.Api.Features.Products.DeleteProduct;
 using ProductCatalogue.Api.Infrastructure.Http;
 using FluentValidation;
 using MediatR;
+using ProductCatalogue.Api.Infrastructure.Observability;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +19,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddHealthChecks();
 builder.Services.AddProblemDetails();
+builder.Services.AddProductCatalogueObservability(builder.Configuration);
 
 var app = builder.Build();
 
