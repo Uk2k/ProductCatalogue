@@ -1,5 +1,8 @@
+using ProductCatalogue.Api.Data;
+
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddProductCataloguePersistence(builder.Configuration);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddHealthChecks();
