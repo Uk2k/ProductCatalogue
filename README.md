@@ -56,25 +56,7 @@ Each product use case owns its endpoint, request/command or query, handler, and 
 
 ## Local setup
 
-### 1. Start SQL Server
-
-```powershell
-docker run --name productcatalogue-sql `
-  -e ACCEPT_EULA=Y `
-  -e MSSQL_SA_PASSWORD="<local-password>" `
-  -p 14333:1433 `
-  -d mcr.microsoft.com/mssql/server:2022-latest
-```
-
-Check that the container is running:
-
-```powershell
-docker ps --filter name=productcatalogue-sql
-```
-
-SQL Server may take a short time to become ready after the container starts.
-
-### 2. Configure development settings
+### 1. Configure development settings
 
 Create `src/ProductCatalogue.Api/appsettings.Development.json` locally. Do not commit real credentials:
 
@@ -91,7 +73,7 @@ Create `src/ProductCatalogue.Api/appsettings.Development.json` locally. Do not c
 
 The repository ignores this file because it contains local configuration. User Secrets, environment variables, or a Key Vault provider can supply the same keys in other environments.
 
-### 3. Apply the database migration
+### 2. Apply the database migration
 
 ```powershell
 dotnet ef database update `
@@ -105,7 +87,7 @@ If `dotnet ef` is not installed:
 dotnet tool install --global dotnet-ef --version 8.0.*
 ```
 
-### 4. Run the API
+### 3. Run the API
 
 ```powershell
 dotnet run --project src/ProductCatalogue.Api
