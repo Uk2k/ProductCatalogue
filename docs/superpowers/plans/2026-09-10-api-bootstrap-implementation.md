@@ -27,7 +27,7 @@
 | `ProductCatalogue.sln` | Solution entry point for the API now and later slices. |
 | `src/ProductCatalogue.Api/ProductCatalogue.Api.csproj` | .NET 8 web-project settings and Swagger dependency. |
 | `src/ProductCatalogue.Api/Program.cs` | Host composition, operational service registration, and route mapping. |
-| `.gitignore` | Excludes build output, IDE state, local secrets, and local database files. |
+| `.gitignore` | Preserves existing Visual Studio exclusions and adds project-specific local secrets and database files. |
 
 ### Task 1: Create the solution and web-project skeleton
 
@@ -35,7 +35,7 @@
 - Create: `ProductCatalogue.sln`
 - Create: `src/ProductCatalogue.Api/ProductCatalogue.Api.csproj`
 - Create: `src/ProductCatalogue.Api/Program.cs`
-- Create: `.gitignore`
+- Modify: `.gitignore`
 
 **Interfaces:**
 - Consumes: .NET 8 SDK command-line templates.
@@ -90,23 +90,16 @@ Replace `src/ProductCatalogue.Api/ProductCatalogue.Api.csproj` with:
 </Project>
 ```
 
-- [ ] **Step 5: Add source-control exclusions**
+- [ ] **Step 5: Preserve and extend source-control exclusions**
 
-Create `.gitignore` with:
+Keep the existing Visual Studio `.gitignore` content. Append only these entries when they are not already present:
 
 ```gitignore
-bin/
-obj/
-.vs/
-.vscode/
-*.user
-*.suo
 *.db
 *.db-shm
 *.db-wal
 appsettings.Development.json
 secrets.json
-TestResults/
 coverage/
 ```
 
@@ -153,7 +146,7 @@ app.MapHealthChecks("/health");
 
 app.Run();
 
-public partial class Program;
+public partial class Program { }
 ```
 
 - [ ] **Step 2: Build the composed host**
