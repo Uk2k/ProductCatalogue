@@ -1,0 +1,21 @@
+using FluentValidation;
+using MediatR;
+
+namespace ProductCatalogue.Api.Features.Products.UpdateProduct;
+
+public static class UpdateProductEndpoint
+{
+    public static IEndpointRouteBuilder MapUpdateProductEndpoint(this IEndpointRouteBuilder endpoints)
+    {
+        endpoints.MapPut("/products/{id:guid}", async (Guid id, UpdateProductRequest request, ISender sender, IValidator<UpdateProductCommand> validator, CancellationToken ct) =>
+        {
+            var command = new UpdateProductCommand(id, request.Name, request.Price, request.Stock);
+            var validation = await validator.ValidateAsync(new FluentValidation.ValidationContext<UpdateProductCommand>(command), ct);
+            if (!validation.IsValid) return Results.ValidationProblem(validation.ToDictionary());
+            return await sender.Send(command, ct) is { } product ? Results.Ok(product) : Results.NotFound();
+        });
+        return endpoints;
+    }
+
+    public sealed record UpdateProductRequest(string Name, decimal Price, int Stock);
+}
