@@ -46,6 +46,8 @@ public sealed class SqlServerContainerFixture : IAsyncLifetime
     {
         public AppDbContext Context { get; } = context;
 
+        public string ConnectionString { get; } = connectionString;
+
         public AppDbContext CreateContext()
         {
             var options = new DbContextOptionsBuilder<AppDbContext>()
