@@ -35,6 +35,43 @@ public sealed class ExceptionHandlingMiddlewareTests
         Assert.Equal("trace-123", problem?.Instance);
     }
 
+    [Fact]
+    public async Task InvokeAsync_WhenDevelopment_ReturnsExceptionMessageInProblemDetails()
+    {
+        var middleware = new ExceptionHandlingMiddleware(
+            _ => throw new InvalidOperationException("diagnostic detail"),
+            NullLogger<ExceptionHandlingMiddleware>.Instance,
+            new TestHostEnvironment { EnvironmentName = Environments.Development });
+        var context = new DefaultHttpContext();
+        await using var responseBody = new MemoryStream();
+        context.Response.Body = responseBody;
+
+        await middleware.InvokeAsync(context);
+
+        responseBody.Position = 0;
+        var problem = await JsonSerializer.DeserializeAsync<ProblemDetailsDto>(responseBody, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        Assert.Equal("diagnostic detail", problem?.Detail);
+    }
+
+    [Fact]
+    public async Task InvokeAsync_WhenBadRequestExceptionOccurs_ReturnsBadRequestProblemDetails()
+    {
+        var middleware = new ExceptionHandlingMiddleware(
+            _ => throw new BadHttpRequestException("malformed JSON"),
+            NullLogger<ExceptionHandlingMiddleware>.Instance,
+            new TestHostEnvironment());
+        var context = new DefaultHttpContext();
+        await using var responseBody = new MemoryStream();
+        context.Response.Body = responseBody;
+
+        await middleware.InvokeAsync(context);
+
+        Assert.Equal(StatusCodes.Status400BadRequest, context.Response.StatusCode);
+        responseBody.Position = 0;
+        var problem = await JsonSerializer.DeserializeAsync<ProblemDetailsDto>(responseBody, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        Assert.Equal("The request could not be understood.", problem?.Detail);
+    }
+
     private sealed class TestHostEnvironment : IHostEnvironment
     {
         public string EnvironmentName { get; set; } = Environments.Production;

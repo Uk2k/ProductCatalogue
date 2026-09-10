@@ -16,6 +16,21 @@ public sealed class ExceptionHandlingMiddleware(
         }
         catch (Exception exception)
         {
+            if (exception is BadHttpRequestException)
+            {
+                context.Response.Clear();
+                context.Response.StatusCode = StatusCodes.Status400BadRequest;
+                context.Response.ContentType = "application/problem+json";
+                await JsonSerializer.SerializeAsync(context.Response.Body, new ProblemDetails
+                {
+                    Status = StatusCodes.Status400BadRequest,
+                    Title = "Bad Request",
+                    Detail = "The request could not be understood.",
+                    Instance = context.TraceIdentifier
+                });
+                return;
+            }
+
             logger.LogError(exception, "Unhandled exception processing {Method} {Path}", context.Request.Method, context.Request.Path);
 
             if (context.Response.HasStarted)

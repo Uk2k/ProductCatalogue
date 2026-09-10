@@ -44,6 +44,8 @@ public sealed class SqlServerContainerFixture : IAsyncLifetime
         string connectionString,
         AppDbContext context) : IAsyncDisposable
     {
+        private readonly string connectionStringValue = connectionString;
+
         public AppDbContext Context { get; } = context;
 
         public string ConnectionString { get; } = connectionString;
@@ -51,7 +53,7 @@ public sealed class SqlServerContainerFixture : IAsyncLifetime
         public AppDbContext CreateContext()
         {
             var options = new DbContextOptionsBuilder<AppDbContext>()
-                .UseSqlServer(connectionString)
+                .UseSqlServer(connectionStringValue)
                 .Options;
             return new AppDbContext(options);
         }
@@ -60,7 +62,7 @@ public sealed class SqlServerContainerFixture : IAsyncLifetime
         {
             await Context.DisposeAsync();
 
-            var masterConnectionString = new SqlConnectionStringBuilder(connectionString)
+            var masterConnectionString = new SqlConnectionStringBuilder(connectionStringValue)
             {
                 InitialCatalog = "master"
             };
