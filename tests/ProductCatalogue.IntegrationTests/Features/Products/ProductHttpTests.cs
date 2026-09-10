@@ -37,6 +37,7 @@ public sealed class ProductHttpTests(SqlServerContainerFixture fixture)
         using var factory = new ProductCatalogueWebApplicationFactory(database);
         var response = await factory.CreateClient().GetAsync($"/products/{Guid.NewGuid()}");
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        Assert.Equal("application/problem+json", response.Content.Headers.ContentType?.MediaType);
     }
 
     [Fact]
@@ -47,6 +48,26 @@ public sealed class ProductHttpTests(SqlServerContainerFixture fixture)
         var response = await factory.CreateClient().PostAsJsonAsync("/products", new { name = "", price = 0, stock = -1 });
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         Assert.Equal(0, await database.Context.Products.CountAsync());
+    }
+
+    [Fact]
+    public async Task Put_unknown_id_returns_problem_details_not_found()
+    {
+        await using var database = await fixture.CreateDatabaseAsync();
+        using var factory = new ProductCatalogueWebApplicationFactory(database);
+        var response = await factory.CreateClient().PutAsJsonAsync($"/products/{Guid.NewGuid()}", new { name = "Keyboard", price = 49.99m, stock = 10 });
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        Assert.Equal("application/problem+json", response.Content.Headers.ContentType?.MediaType);
+    }
+
+    [Fact]
+    public async Task Delete_unknown_id_returns_problem_details_not_found()
+    {
+        await using var database = await fixture.CreateDatabaseAsync();
+        using var factory = new ProductCatalogueWebApplicationFactory(database);
+        var response = await factory.CreateClient().DeleteAsync($"/products/{Guid.NewGuid()}");
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        Assert.Equal("application/problem+json", response.Content.Headers.ContentType?.MediaType);
     }
 
     private sealed record ProductDto(Guid Id, string Name, decimal Price, int Stock);

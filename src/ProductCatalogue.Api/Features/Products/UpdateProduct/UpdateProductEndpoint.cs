@@ -12,7 +12,9 @@ public static class UpdateProductEndpoint
             var command = new UpdateProductCommand(id, request.Name, request.Price, request.Stock);
             var validation = await validator.ValidateAsync(new FluentValidation.ValidationContext<UpdateProductCommand>(command), ct);
             if (!validation.IsValid) return Results.ValidationProblem(validation.ToDictionary());
-            return await sender.Send(command, ct) is { } product ? Results.Ok(product) : Results.NotFound();
+            return await sender.Send(command, ct) is { } product
+                ? Results.Ok(product)
+                : Results.Problem(statusCode: StatusCodes.Status404NotFound, title: "Product not found");
         });
         return endpoints;
     }
