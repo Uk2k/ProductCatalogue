@@ -1,6 +1,6 @@
 # Product Catalogue API
 
-An ASP.NET Core .NET 8 minimal API built for the LRPQ senior software engineer development challenge.
+An ASP.NET Core .NET 8 minimal API built for the LRQA senior software engineer development challenge.
 
 The API provides CRUD operations for products and demonstrates vertical-slice architecture, MediatR, EF Core, SQL Server, validation, integration testing, structured request logging, exception handling, and feature-toggled OpenTelemetry.
 
