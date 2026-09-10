@@ -9,7 +9,8 @@ The API provides CRUD operations for products and demonstrates vertical-slice ar
 - .NET 8 and ASP.NET Core minimal APIs
 - Entity Framework Core with SQL Server
 - MediatR for request/handler dispatch
-- FluentValidation for command validation
+- DataAnnotations (`[Required]`, `[Range]`, and related attributes) for API model validation
+- FluentValidation for command-level validation
 - xUnit for unit and integration tests
 - Testcontainers for disposable SQL Server integration-test databases
 - Swagger/OpenAPI for interactive API exploration
