@@ -40,7 +40,7 @@ Data/Migrations/<timestamp>_InitialCreate.cs
 
 The repository contains no database credential or connection string value. The application requires configuration key `ConnectionStrings:ProductCatalogue`, which can be supplied locally through .NET User Secrets or environment variable `ConnectionStrings__ProductCatalogue`. Production deployment variables and a future Azure Key Vault provider will supply the identical configuration key.
 
-`AppDbContextFactory` supports EF Core design-time commands by loading normal application configuration and environment variables. It fails with a clear error when the connection string is missing, rather than silently using a development database.
+`AppDbContextFactory` supports EF Core design-time commands by loading normal application configuration, optional .NET User Secrets, and environment variables. It loads User Secrets before environment variables so deployed configuration can override local values. It fails with a clear error when the connection string is missing, rather than silently using a development database.
 
 An `InitialCreate` EF Core migration is committed to source control. Developers apply it explicitly with `dotnet ef database update`; the API never applies migrations automatically at startup. Future integration tests will apply the same migration to their disposable SQL Server database.
 

@@ -6,7 +6,7 @@
 
 **Architecture:** Product remains feature-owned under `Features/Products`; `Data` owns the generic EF Core boundary. The API composition root registers SQL Server through a focused extension method, while a design-time factory independently loads the same external configuration for `dotnet ef`.
 
-**Tech Stack:** .NET 8.0.31, ASP.NET Core minimal APIs, EF Core SQL Server 8.0.31, dotnet-ef 8.0.31.
+**Tech Stack:** .NET 8.0.31, ASP.NET Core minimal APIs, EF Core SQL Server 8.0.31, User Secrets configuration 8.0.0, dotnet-ef 8.0.31.
 
 **Spec:** `docs/superpowers/specs/2026-09-10-persistence-foundation-design.md`
 
@@ -25,7 +25,7 @@
 | Path | Responsibility |
 |---|---|
 | `.config/dotnet-tools.json` | Pins the repository-local EF Core CLI tool. |
-| `src/ProductCatalogue.Api/ProductCatalogue.Api.csproj` | EF Core package references and User Secrets identifier. |
+| `src/ProductCatalogue.Api/ProductCatalogue.Api.csproj` | EF Core and User Secrets package references, plus the User Secrets identifier. |
 | `src/ProductCatalogue.Api/Features/Products/Product.cs` | Product entity with GUID identity and challenge-required fields. |
 | `src/ProductCatalogue.Api/Data/AppDbContext.cs` | EF Core context and the `Products` set. |
 | `src/ProductCatalogue.Api/Data/Configurations/ProductConfiguration.cs` | Relational table, precision, length, and integrity-constraint mapping. |
@@ -220,6 +220,7 @@ public sealed class AppDbContextFactory : IDesignTimeDbContextFactory<AppDbConte
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile("appsettings.json", optional: false)
             .AddJsonFile($"appsettings.{environment}.json", optional: true)
+            .AddUserSecrets<AppDbContextFactory>(optional: true)
             .AddEnvironmentVariables()
             .Build();
 
@@ -263,7 +264,7 @@ Run:
 dotnet user-secrets init --project src/ProductCatalogue.Api/ProductCatalogue.Api.csproj
 ```
 
-Expected: the project file receives a `UserSecretsId`; no `appsettings.Development.json` file or connection string is created in the repository.
+Expected: the project file receives a `UserSecretsId`; together with the User Secrets provider, the factory can read locally stored connection strings. No `appsettings.Development.json` file or connection string is created in the repository.
 
 - [ ] **Step 5: Build the configured host**
 
@@ -381,5 +382,4 @@ Expected: the commit includes the entity, EF configuration, design-time factory,
 
 - `AppDbContext`, `Product`, `ConnectionStrings:ProductCatalogue`, `InitialCreate`, and the two check-constraint names are used consistently throughout.
 - The plan uses EF Core 8.0.31, matching the installed .NET runtime.
-- The User Secrets command writes outside the repository, and no command copies its output into a tracked file.
-
+- The User Secrets command writes its connection-string value outside the repository, and no command copies that value into a tracked file. The design-time factory loads User Secrets before environment variables, so deployment configuration can override local values.
