@@ -4,7 +4,7 @@
 
 **Goal:** Add globally consistent ProblemDetails responses for validation, not-found, and unexpected API failures.
 
-**Architecture:** Add a single `ExceptionHandlingMiddleware` in the existing HTTP infrastructure folder. It maps known exceptions to typed ProblemDetails responses, logs unexpected failures, and is registered before request logging so the existing middleware observes the final response status.
+**Architecture:** Add a single `ExceptionHandlingMiddleware` in the existing HTTP infrastructure folder for unexpected failures. Configure ASP.NET Core `AddProblemDetails` for endpoint-generated 400/404 responses, and register exception handling before request logging so the existing middleware observes the final response status.
 
 **Tech Stack:** ASP.NET Core .NET 8, `ProblemDetails`, FluentValidation, xUnit, existing WebApplicationFactory and Testcontainers SQL Server fixture.
 
@@ -28,9 +28,9 @@
 - Consumes: `ProductCatalogue.Api.Infrastructure.Http.ExceptionHandlingMiddleware`.
 - Produces: executable expectations for validation, not-found, and unexpected exceptions.
 
-- [ ] **Step 1: Write tests for exception mappings**
+- [ ] **Step 1: Write tests for exception responses**
 
-Cover `ValidationException` as 400 with field errors, `KeyNotFoundException` as 404, and an ordinary exception as 500 with a generic detail.
+Cover an ordinary exception as 500 with a generic detail and verify the response content type and trace instance. Do not test `ValidationException` or `KeyNotFoundException`; current handlers return validation and not-found results rather than throwing those exceptions.
 
 - [ ] **Step 2: Run the focused tests**
 
@@ -50,7 +50,7 @@ Expected: FAIL because the middleware does not exist.
 
 - [ ] **Step 1: Implement exception mapping**
 
-Use `context.Response.StatusCode`, `ContentType = "application/problem+json"`, `ProblemDetailsService`/JSON serialization compatible with ASP.NET Core, and `context.TraceIdentifier` as the instance value. Log unexpected exceptions at Error level.
+Use `context.Response.StatusCode = 500`, `ContentType = "application/problem+json"`, JSON serialization compatible with ASP.NET Core, and `context.TraceIdentifier` as the instance value. Log unexpected exceptions at Error level. Register `builder.Services.AddProblemDetails()` so endpoint-generated client errors use the same media type.
 
 - [ ] **Step 2: Register before request logging**
 
@@ -65,7 +65,7 @@ Expected: PASS.
 ### Task 3: Add HTTP integration coverage
 
 **Files:**
-- Modify: `tests/ProductCatalogue.IntegrationTests/Features/Products/ProductHttpTests.cs` or create a focused exception-response test file beside it.
+- Modify: `tests/ProductCatalogue.IntegrationTests/Features/Products/ProductHttpTests.cs`
 
 **Interfaces:**
 - Consumes: existing `ProductCatalogueWebApplicationFactory` and product endpoints.
@@ -73,7 +73,7 @@ Expected: PASS.
 
 - [ ] **Step 1: Add not-found tests**
 
-Assert GET, PUT, and DELETE for a random GUID return 404 and `application/problem+json`.
+Assert GET, PUT, and DELETE for a random GUID return 404 and `application/problem+json` after `AddProblemDetails` is configured.
 
 - [ ] **Step 2: Add validation response test**
 

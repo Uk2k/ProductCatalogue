@@ -10,8 +10,7 @@ This slice adds one global middleware to the ASP.NET Core pipeline and tests its
 
 ## Behaviour
 
-- `KeyNotFoundException` becomes HTTP 404 with a `ProblemDetails` body.
-- `ValidationException` becomes HTTP 400 with a `ValidationProblemDetails` body and field errors.
+- Existing endpoint `404` and validation `400` results remain endpoint-owned, but are standardized through ASP.NET Core ProblemDetails configuration.
 - Any other exception becomes HTTP 500 with a generic `ProblemDetails` body.
 - In Development, the unexpected-error detail may contain the exception message; non-Development responses use a generic detail.
 - The middleware logs unexpected exceptions with the exception and request context.
@@ -19,12 +18,12 @@ This slice adds one global middleware to the ASP.NET Core pipeline and tests its
 
 ## Design
 
-`ExceptionHandlingMiddleware` wraps the remaining pipeline and writes a response only when an exception escapes. A focused exception-to-ProblemDetails mapping keeps endpoint code unchanged. Registration occurs before request logging so the logging middleware records the final status code.
+`ExceptionHandlingMiddleware` wraps the remaining pipeline and writes a response only when an unexpected exception escapes. `AddProblemDetails` provides the common response contract for endpoint-generated client errors. Registration occurs before request logging so the logging middleware records the final status code.
 
 ## Testing
 
 - Unit tests invoke the middleware with a minimal `RequestDelegate`, a real `DefaultHttpContext`, and a test logger.
-- Integration tests exercise GET, PUT, and DELETE not-found responses through the existing Testcontainers-backed web application factory.
+- Integration tests exercise GET, PUT, and DELETE not-found responses plus validation responses through the existing Testcontainers-backed web application factory.
 - A failing delegate verifies the generic 500 response and that implementation details are not exposed outside Development.
 
 ## Non-goals
