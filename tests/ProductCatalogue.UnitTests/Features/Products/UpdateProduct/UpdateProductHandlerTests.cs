@@ -14,7 +14,7 @@ public sealed class UpdateProductHandlerTests
         var id = Guid.NewGuid();
         db.Products.Add(new Product { Id = id, Name = "Old", Price = 1, Stock = 1 });
         await db.SaveChangesAsync();
-        var result = await new UpdateProductHandler(db).Handle(new(id, "New", 2, 3), default);
+        var result = await new UpdateProductHandler(new ProductRepository(db)).Handle(new(id, "New", 2, 3), default);
         Assert.Equal(new(id, "New", 2, 3), result);
     }
 
@@ -22,7 +22,7 @@ public sealed class UpdateProductHandlerTests
     public async Task Returns_null_for_missing_product()
     {
         await using var db = CreateContext();
-        Assert.Null(await new UpdateProductHandler(db).Handle(new(Guid.NewGuid(), "New", 2, 3), default));
+        Assert.Null(await new UpdateProductHandler(new ProductRepository(db)).Handle(new(Guid.NewGuid(), "New", 2, 3), default));
     }
 
     private static AppDbContext CreateContext() => new(new DbContextOptionsBuilder<AppDbContext>().UseInMemoryDatabase(Guid.NewGuid().ToString()).Options);

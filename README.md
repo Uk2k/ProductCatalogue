@@ -33,6 +33,7 @@ docker version
 ```text
 src/ProductCatalogue.Api
 ├── Data/                    EF Core context, configuration, and migrations
+│                            Product repository abstraction and EF implementation
 ├── Features/Products/       Vertical slices grouped by product use case
 │   ├── CreateProduct/
 │   ├── GetProduct/
@@ -162,6 +163,7 @@ The connection-string key is `ConnectionStrings:ProductCatalogue`; its environme
 
 - Vertical slices keep each use case cohesive and independently testable.
 - MediatR separates HTTP binding from request handling.
+- `IProductRepository` keeps handlers independent of EF Core and allows application logic to be unit tested against an abstraction.
 - EF Core migrations provide a repeatable database schema.
 - GUID IDs avoid exposing sequence information and support distributed creation.
 - PUT is used for complete replacement; PATCH would require partial-update semantics and additional concurrency rules.

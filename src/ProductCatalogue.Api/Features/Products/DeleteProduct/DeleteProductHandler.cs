@@ -3,14 +3,14 @@ using ProductCatalogue.Api.Data;
 
 namespace ProductCatalogue.Api.Features.Products.DeleteProduct;
 
-public sealed class DeleteProductHandler(AppDbContext db) : IRequestHandler<DeleteProductCommand, bool>
+public sealed class DeleteProductHandler(IProductRepository repository) : IRequestHandler<DeleteProductCommand, bool>
 {
     public async Task<bool> Handle(DeleteProductCommand request, CancellationToken cancellationToken)
     {
-        var product = await db.Products.FindAsync([request.Id], cancellationToken);
+        var product = await repository.GetByIdAsync(request.Id, cancellationToken);
         if (product is null) return false;
-        db.Products.Remove(product);
-        await db.SaveChangesAsync(cancellationToken);
+        repository.Remove(product);
+        await repository.SaveChangesAsync(cancellationToken);
         return true;
     }
 }
